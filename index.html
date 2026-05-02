@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gizmo.vals</title>
+
+<style>
+:root{
+  --bg:#1e1f24;
+  --card:#2a2c33;
+  --slot:#353842;
+  --border:#4c5060;
+  --text:#fff;
+
+  --mega:#8A30EE;
+  --neon:#89C63D;
+  --fly:#2E98C2;
+  --ride:#ED2E70;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial;
+}
+
+/* TOP */
+.topbar{
+  display:flex;
+  justify-content:center;
+  padding:14px;
+  position:relative;
+}
+
+.logo{font-size:28px;font-weight:700;}
+
+.settingsBtn{
+  position:absolute;
+  right:12px;
+  top:10px;
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:10px;
+  background:var(--card);
+  color:white;
+}
+
+/* MAIN */
+.tradeBox{
+  width:95%;
+  max-width:900px;
+  margin:auto;
+  background:var(--card);
+  border-radius:18px;
+  padding:14px;
+}
+
+.tradeTitle{
+  text-align:center;
+  opacity:.8;
+  margin-bottom:10px;
+}
+
+.barWrap{
+  height:10px;
+  background:#18191d;
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:15px;
+}
+
+.bar{
+  height:100%;
+  width:50%;
+  background:linear-gradient(90deg,#ff9966,#ff5e8a);
+}
+
+/* TRADE */
+.tradeRow{
+  display:flex;
+  justify-content:space-between;
+  gap:30px;
+}
+
+.gridWrap{
+  height:420px;
+  overflow-y:auto;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,70px);
+  gap:8px;
+}
+
+.slot{
+  width:70px;
+  height:70px;
+  background:var(--slot);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.slot img{width:50px;}
+
+.plus{font-size:26px;opacity:.6;}
+
+.middleValue{
+  font-size:26px;
+  font-weight:700;
+  padding-top:160px;
+  min-width:70px;
+  text-align:center;
+}
+
+/* PICKER */
+.picker{
+  position:fixed;
+  bottom:-100%;
+  left:0;
+  width:100%;
+  background:var(--card);
+  padding:12px;
+  transition:.25s;
+}
+
+.picker.active{bottom:0;}
+
+.mods{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.mods button{
+  border:none;
+  padding:8px 10px;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+}
+
+.flyBtn{background:var(--fly);}
+.rideBtn{background:var(--ride);}
+.neonBtn{background:var(--neon);}
+.megaBtn{background:var(--mega);}
+.noneBtn{background:#555;}
+
+.petGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  max-height:220px;
+  overflow-y:auto;
+  margin-top:10px;
+}
+
+.pet{
+  background:var(--slot);
+  padding:6px;
+  border-radius:10px;
+  font-size:11px;
+  text-align:center;
+  cursor:pointer;
+}
+
+.pet img{width:100%;height:50px;object-fit:contain;}
+
+/* SETTINGS */
+.settingsMenu{
+  position:fixed;
+  top:60px;
+  right:12px;
+  width:240px;
+  background:var(--card);
+  border-radius:14px;
+  padding:12px;
+  display:none;
+  z-index:999;
+}
+
+.themeRow{
+  display:flex;
+  gap:8px;
+}
+
+.theme{
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  cursor:pointer;
+  border:2px solid white;
+}
+
+.customColor{
+  width:100%;
+  margin-top:8px;
+  height:35px;
+}
+
+.contactBtn{
+  display:block;
+  margin-top:10px;
+  text-align:center;
+  background:#5865F2;
+  color:white;
+  padding:10px;
+  border-radius:10px;
+  text-decoration:none;
+  font-size:13px;
+}
+
+.watermark{
+  font-size:11px;
+  opacity:.5;
+  margin-top:10px;
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  font-size:12px;
+  opacity:.7;
+  margin:20px auto 260px;
+  width:90%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="logo">gizmo</div>
+  <button class="settingsBtn" onclick="toggleSettings()">⚙</button>
+</div>
+
+<div class="tradeBox">
+
+<div class="tradeTitle">YOUR OFFER • THEIR OFFER</div>
+
+<div class="barWrap">
+  <div class="bar" id="bar"></div>
+</div>
+
+<div class="tradeRow">
+
+  <div class="gridWrap">
+    <div class="grid" id="youGrid"></div>
+  </div>
+
+  <div class="middleValue" id="middleValue">0</div>
+
+  <div class="gridWrap">
+    <div class="grid" id="themGrid"></div>
+  </div>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+<div class="settingsMenu" id="settingsMenu">
+
+<h3>Themes</h3>
+<div class="themeRow">
+  <div class="theme" style="background:#1e1f24" onclick="setTheme('#1e1f24','#2a2c33')"></div>
+  <div class="theme" style="background:#141a2a" onclick="setTheme('#141a2a','#222b3d')"></div>
+  <div class="theme" style="background:#1a241d" onclick="setTheme('#1a241d','#24352a')"></div>
+</div>
+
+<h3>Custom</h3>
+<input type="color" class="customColor" onchange="customTheme(this.value)">
+
+<div style="font-size:12px;margin-top:10px;">
+Need help? message @ykviro
+</div>
+
+<a class="contactBtn" href="https://discord.com/users/ykviro" target="_blank">
+Message @ykviro
+</a>
+
+<div class="watermark">gizmo.vals - 2026</div>
+
+</div>
+
+<!-- PICKER -->
+<div class="picker" id="picker">
+
+<div class="mods">
+<button class="flyBtn" onclick="toggleMod('fly')">Fly</button>
+<button class="rideBtn" onclick="toggleMod('ride')">Ride</button>
+<button class="neonBtn" onclick="toggleMod('neon')">Neon</button>
+<button class="megaBtn" onclick="toggleMod('mega')">Mega</button>
+<button class="noneBtn" onclick="removePet()">None</button>
+</div>
+
+<div class="petGrid" id="petGrid"></div>
+
+</div>
+
+<div class="footer">
+This Value Calculator is to know Adopt Me Values.
+Compare trades by placing pets on each side.
+</div>
+
+<script>
+
+const pets=[
+{name:"Shadow Dragon",value:560,img:"https://elvebredd.com/images/pets/Shadow%20Dragon.png?dpl=20260426-203333"},
+{name:"Bat Dragon",value:700,img:"https://elvebredd.com/images/pets/Bat%20Dragon.png?dpl=20260426-203333"},
+{name:"Frost Dragon",value:275,img:"https://elvebredd.com/images/pets/Frost%20Dragon.png?dpl=20260426-203333"},
+{name:"Owl",value:200,img:"https://elvebredd.com/images/pets/Owl.png?dpl=20260426-203333"},
+{name:"Giraffe",value:322,img:"https://elvebredd.com/images/pets/Giraffe.png?dpl=20260426-203333"},
+{name:"Monkey",value:1,img:"https://elvebredd.com/images/pets/Monkey.png?dpl=20260426-203333"},
+{name:"African Wild Dog",value:155,img:"https://elvebredd.com/images/pets/African%20Wild%20Dog.png?dpl=20260426-203333"},
+{name:"Giant Panda",value:105,img:"https://elvebredd.com/images/pets/Giant%20Panda.png?dpl=20260426-203333"},
+{name:"Crow",value:141,img:"https://elvebredd.com/images/pets/Crow.png?dpl=20260426-203333"},
+{name:"Evil Unicorn",value:85,img:"https://elvebredd.com/images/pets/Evil%20Unicorn.png?dpl=20260426-203333"},
+{name:"Crypted",value:90,img:"https://elvebredd.com/images/pets/Cryptid.png?dpl=20260426-203333"},
+{name:"Strawberry Shortcake Bat Dragon",value:31,img:"https://elvebredd.com/images/pets/Strawberry%20Shortcake%20Bat%20Dragon.png?dpl=20260426-203333"},
+{name:"Chocolate Chip Bat Dragon",value:25,img:"https://elvebredd.com/images/pets/Chocolate%20Chip%20Bat%20Dragon.png?dpl=20260426-203333"},
+{name:"Turtle",value:25,img:"https://elvebredd.com/images/pets/Turtle.png?dpl=20260426-203333"},
+{name:"Monkey King",value:25,img:"https://elvebredd.com/images/pets/Monkey%20King.png?dpl=20260426-203333"},
+{name:"tung tung",value:560,img:"https://elvebredd.com/images/pets/Kangaroo%20Pogo.png?dpl=20260426-203333"}
+];
+
+let you=new Array(18).fill(null);
+let them=new Array(18).fill(null);
+
+let currentSlot=null;
+let currentSide=null;
+let mods={fly:false,ride:false,neon:false,mega:false};
+
+/* GRID */
+function draw(){
+drawSide("you",youGrid);
+drawSide("them",themGrid);
+update();
+}
+
+function drawSide(side,el){
+el.innerHTML="";
+let list=side==="you"?you:them;
+
+list.forEach((p,i)=>{
+let d=document.createElement("div");
+d.className="slot";
+
+if(p){
+d.innerHTML=`<img src="${p.img}">`;
+}else{
+d.innerHTML="+";
+}
+
+d.onclick=()=>{
+currentSlot=i;
+currentSide=side;
+
+if(!p){
+picker.classList.add("active");
+}else{
+if(side==="you") you[i]=null;
+else them[i]=null;
+draw();
+}
+};
+
+el.appendChild(d);
+});
+}
+
+/* PETS */
+function loadPets(){
+petGrid.innerHTML="";
+pets.forEach(p=>{
+let d=document.createElement("div");
+d.className="pet";
+d.innerHTML=`<img src="${p.img}">${p.name}`;
+d.onclick=()=>add(p);
+petGrid.appendChild(d);
+});
+}
+
+function add(p){
+if(currentSlot===null) return;
+
+let obj={...p,...mods};
+
+if(currentSide==="you") you[currentSlot]=obj;
+else them[currentSlot]=obj;
+
+picker.classList.remove("active");
+draw();
+}
+
+/* REMOVE */
+function removePet(){
+if(currentSlot===null) return;
+
+if(currentSide==="you") you[currentSlot]=null;
+else them[currentSlot]=null;
+
+picker.classList.remove("active");
+draw();
+}
+
+/* MODS */
+function toggleMod(t){mods[t]=!mods[t];}
+
+/* VALUE */
+function calc(list){
+let t=0;
+list.forEach(p=>{
+if(!p) return;
+let v=p.value;
+if(p.neon) v*=2;
+if(p.mega) v*=4;
+if(p.fly) v*=1.1;
+if(p.ride) v*=1.1;
+t+=v;
+});
+return t;
+}
+
+function update(){
+let y=calc(you);
+let t=calc(them);
+bar.style.width=(y+t===0?50:(y/(y+t))*100)+"%";
+middleValue.innerText=Math.round(y-t);
+}
+
+/* SETTINGS */
+function toggleSettings(){
+settingsMenu.style.display=
+settingsMenu.style.display==="block"?"none":"block";
+}
+
+function setTheme(b,c){
+document.documentElement.style.setProperty('--bg',b);
+document.documentElement.style.setProperty('--card',c);
+}
+
+function customTheme(c){
+document.documentElement.style.setProperty('--bg',c);
+}
+
+draw();
+loadPets();
+
+</script>
+
+</body>
+</html>
